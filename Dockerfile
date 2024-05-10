@@ -15,7 +15,7 @@ RUN npm install
 COPY . .
 
 # Expose the port on which the server will run by default port is 5173
-#EXPOSE 3000
+EXPOSE 5173
 
 # Define the command to run the application
 CMD ["npm","run", "dev"]
