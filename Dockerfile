@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as the base image
-FROM node:18-alpine
+FROM node:22-alpine
 
 # Set the working directory in the container
 WORKDIR /app
@@ -12,9 +12,6 @@ RUN npm install
 
 # Copy the rest of the application code to the working directory
 COPY . .
-
-# Build the Vite project
-RUN npm run build
 
 # Expose the port on which the server will run by default port is 5173
 EXPOSE 5173
