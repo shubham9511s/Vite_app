@@ -16,19 +16,17 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Stage 2: Run
-FROM gcr.io/distroless/nodejs:16
+# Stage 2: Serve
+FROM nginx:alpine
 
-# Set the working directory in the container
-WORKDIR /app
+# Copy the built assets from the build stage
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy the built assets and node_modules from the build stage
-COPY --from=build /app/dist /app/dist
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/package.json /app/package.json
+# Copy a custom Nginx configuration file if needed
+# COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose the port on which the server will run (default port is 5173)
-EXPOSE 5173
+# Expose the port on which the server will run (default port is 80 for Nginx)
+EXPOSE 80
 
-# Define the command to run the application
-CMD ["dist/index.js"]
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
