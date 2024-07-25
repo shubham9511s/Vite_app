@@ -1,22 +1,34 @@
-# Use an official Node.js runtime as the base image
-FROM node:22-alpine
+# Stage 1: Build
+FROM node:22-alpine AS build
 
 # Set the working directory in the container
 WORKDIR /app
 
-
-COPY /package*.json ./
+# Copy package.json and package-lock.json files
+COPY package*.json ./
 
 # Install dependencies
-RUN npm install 
+RUN npm install
 
 # Copy the rest of the application code to the working directory
 COPY . .
 
-# Expose the port on which the server will run by default port is 5173
+# Build the application
+RUN npm run build
+
+# Stage 2: Run
+FROM gcr.io/distroless/nodejs:16
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy only the built assets and node_modules from the build stage
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/node_modules /app/node_modules
+
+# Expose the port on which the server will run (default port is 5173)
 EXPOSE 5173
 
 # Define the command to run the application
-CMD ["npm","run", "dev"]
-
+CMD ["dist/index.js"]
 
